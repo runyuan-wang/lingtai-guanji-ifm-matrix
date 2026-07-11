@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#FAF7F1" />
 <meta name="description" content="灵台·观己：一次理解身体，观见本我之旅。借功能医学框架梳理身体线索，本地生成温柔的健康故事报告。非诊断、非治疗、非处方。" />
 <meta property="og:title" content="灵台·观己 · 一次理解身体，观见本我之旅" />
-<meta property="og:description" content="借功能医学框架梳理身体线索，本地生成温柔的健康故事报告。数据留在你的设备，除非你选择同步。" />
+<meta property="og:description" content="借功能医学框架梳理身体线索，本地生成温柔的健康故事报告。数据默认留在设备；仅在选择同步或主动开启 AI 时按说明传输。" />
 <meta property="og:type" content="website" />
 <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="./assets/icon-192.png" />
@@ -499,6 +499,7 @@ header .grow{flex:1}
 .badge-rec{font-size:9.5px;font-weight:700;color:#fff;background:var(--dawn-blue);border-radius:999px;padding:1px 7px;margin-left:4px}
 .badge-dev{font-size:9.5px;font-weight:700;color:#3D2E15;background:var(--gold);border-radius:999px;padding:1px 7px;margin-left:4px}
 .badge-care{font-size:9.5px;font-weight:700;color:#fff;background:var(--dawn-pink);border-radius:999px;padding:1px 7px;margin-left:4px}
+.ai-supplement-copy{white-space:pre-wrap;line-height:1.9}
 
 /* 趋势占位 */
 .trend-stub{
@@ -751,7 +752,7 @@ body.report-focus .tabbar,body.report-focus .saved-flash{display:none}
       <p class="lp-lede reveal">四步，把散落的身体线索，讲成一个可以理解的故事。</p>
       <div class="journey" style="text-align:left">
         <div class="j-step reveal"><span class="j-n">壹</span><h3>填写问卷</h3><p>凭直觉记录身体感受与生活方式，约八分钟，可随时回退修改。</p></div>
-        <div class="j-step reveal" style="transition-delay:.08s"><span class="j-n">贰</span><h3>本地分析</h3><p>在你的设备上完成线索梳理，全程不上传数据。</p></div>
+        <div class="j-step reveal" style="transition-delay:.08s"><span class="j-n">贰</span><h3>本地分析</h3><p>在你的设备上完成线索梳理；仅主动开启 AI 时发送脱敏摘要。</p></div>
         <div class="j-step reveal" style="transition-delay:.16s"><span class="j-n">叁</span><h3>生成报告</h3><p>功能医学时间轴与矩阵，温柔地讲述健康背后的故事。</p></div>
         <div class="j-step reveal" style="transition-delay:.24s"><span class="j-n">肆</span><h3>长期追踪</h3><p>档案沉淀为身体年轮，见证自己的成长与改变。</p></div>
       </div>
@@ -761,7 +762,7 @@ body.report-focus .tabbar,body.report-focus .saved-flash{display:none}
   <!-- 隐私承诺：一个区域，一句话 -->
   <div class="lp-section lp-promise">
     <div class="wrap lp-center">
-      <h2 class="promise-line reveal">数据留在<em>你的设备</em>，<br>除非你选择同步。</h2>
+      <h2 class="promise-line reveal">数据默认留在<em>你的设备</em>，<br>除非你选择同步或主动开启 AI。</h2>
       <p class="lp-lede reveal">不注册也能使用全部功能。登录仅用于跨设备同步，档案按账户隔离，随时可导出带走。</p>
     </div>
   </div>
@@ -840,7 +841,7 @@ body.report-focus .tabbar,body.report-focus .saved-flash{display:none}
             <path d="M12 4.5 13.6 10.4 19.5 12 13.6 13.6 12 19.5 10.4 13.6 4.5 12 10.4 10.4Z"/>
             <circle cx="18.8" cy="5.2" r="1.3" fill="currentColor" stroke="none" class="gld-f"/>
           </svg></span>
-          <h3>AI 增强（可选）</h3><p>默认关闭。仅作可选润色 / 摘要 / 追问生成，需自备 Key 并脱敏。</p>
+          <h3>AI 辅助观己报告（可选）</h3><p>使用已填写的矩阵线索，生成一段受约束、可选的身体故事补充；仅在你主动开启后发送去标识化摘要。</p>
         </button>
       </div>
     </div>
@@ -951,7 +952,7 @@ body.report-focus .tabbar,body.report-focus .saved-flash{display:none}
     <div id="reportBody">
       <div class="report-stub">
         点击上方「<b>生成功能医学分析报告</b>」，报告会在你的浏览器本地完成整理。<br>
-        不联网，不上传任何数据。<br><br>
+        本地规则整理本身不联网；只有你在「AI 辅助观己报告」中主动开启并填写接入信息后，才会发送脱敏结构化摘要。<br><br>
         建议先完成「功能医学问卷」并在「健康数据记录」填入可用指标，报告会基于已填内容做映射。
       </div>
     </div>
@@ -963,13 +964,13 @@ body.report-focus .tabbar,body.report-focus .saved-flash{display:none}
   </div>
 </section>
 
-<!-- ═════════ AI 增强设置（可选，默认关闭） ═════════ -->
+<!-- ═════════ AI 辅助观己报告（可选，默认关闭） ═════════ -->
 <section class="view" id="view-ai">
   <div class="wrap">
     <div class="page-head">
-      <div class="ph-k">AI 增强 · 可选 OPTIONAL</div>
-      <h2>AI 增强（可选）</h2>
-      <div class="ph-d"><b style="color:var(--plum-deep)">默认离线规则引擎；AI 仅作可选润色 / 摘要 / 追问生成</b>，不参与红线判定、实验室异常判断、诊断或处方。开启需自备 Key、脱敏后发送，且任何免费额度都不稳定。</div>
+      <div class="ph-k">可选辅助 · 主动开启</div>
+      <h2>AI 辅助观己报告（可选）</h2>
+      <div class="ph-d">使用你已填写的矩阵线索，生成一段受约束、可选的身体故事补充。仅在你主动开启后发送去标识化摘要；内容不构成诊断、治疗或处方，请交由合格专业人员复核。请求失败或内容未通过安全边界时，本地报告仍可使用。</div>
     </div>
     <div id="aiBody"></div>
     <div class="btn-row" style="margin:16px 0 8px">
@@ -1061,7 +1062,7 @@ body.report-focus .tabbar,body.report-focus .saved-flash{display:none}
         </div>
       </div>
     </div>
-    <p class="auth-note">不登录也可以使用全部功能，数据仅保存在本设备。云端同步按账户隔离，随时可导出带走。</p>
+    <p class="auth-note">不登录也可以使用全部功能，数据默认保存在本设备；主动开启 AI 时会按页面说明发送脱敏摘要。云端同步按账户隔离，随时可导出带走。</p>
   </div>
 </section>
 
@@ -1077,6 +1078,7 @@ body.report-focus .tabbar,body.report-focus .saved-flash{display:none}
 <div class="foot-disc">灵台·观己 · 健康观察与沟通的辅助工具 · 非诊断 / 非治疗 / 非处方 · 结论请与营养师或专业人员讨论</div>
 <div class="saved-flash" id="flash">已保存</div>
 
+<script src="./js/ai-enhancement.js"></script>
 <script>
 /* ════════ DATA MODEL —— 复用 IFMMatrix 线上 worktree 结构 ════════ */
 /* 7 IFM 生理节点 + MES 中心核（节点名为 IFM 官方术语） */
@@ -1350,33 +1352,26 @@ var FUNCTIONAL_MEDICINE_SKILL = {
   }
 };
 
-/* ════════ 可选 AI 增强配置（em-5 §6 落地；默认关闭，不写死 Key） ════════ */
+/* ════════ 可选 AI 辅助报告配置（默认关闭） ════════ */
 var AI_ENHANCEMENT = {
-  enabled_by_default:false,           /* 默认关闭 */
-  role:'仅作可选润色 / 摘要 / 追问生成；不参与红线判定、实验室异常判断、诊断或处方。',
-  default_engine:'离线规则引擎（FUNCTIONAL_MEDICINE_SKILL）',
-  redaction:'发送前必须脱敏：删除姓名、电话、身份证、精确地址、检测机构、原始报告图片 / PDF；只发送结构化摘要。',
-  key_policy:'任何 provider key 只从用户本地配置读取，不写入仓库、不放默认值、不打印日志。',
-  /* Provider 候选（来源 em-5 §6.1；不含任何 key / token） */
-  providers:[
-    {id:'gemini', name:'Google Gemini Developer API', tier:'rec',
-     note:'免费层适合脱敏测试 / 用户自带 Key；免费层内容可能用于产品改进，生产健康数据建议付费并核合规条款。'},
-    {id:'groq', name:'Groq', tier:'rec',
-     note:'有开发 / 免费层、推理快；脱敏后可作可选摘要，免费额度会波动，需用户知情。'},
-    {id:'openrouter', name:'OpenRouter Free Models', tier:'dev',
-     note:'仅开发期多模型测试；隐私取决于下游 provider，不默认发送健康敏感数据。'},
-    {id:'cloudflare', name:'Cloudflare Workers AI', tier:'dev',
-     note:'服务端低成本备选；模型能力中等，隐私 / DPA 条款须上线前复核。'},
-    {id:'github', name:'GitHub Models', tier:'dev',
-     note:'原型用 no-cost 限速访问；不建议默认处理健康敏感数据。'},
-    {id:'hf', name:'Hugging Face Inference Providers', tier:'dev',
-     note:'原型 / 开源模型测试；数据流向具体 provider，需逐一核查。'},
-    {id:'kimi', name:'Moonshot / Kimi', tier:'care',
-     note:'需自备 Key，按 token 计费；上线前复核隐私与计费，健康数据需脱敏。'},
-    {id:'deepseek', name:'DeepSeek', tier:'care',
-     note:'需自备 Key，成本低；上线前复核隐私、数据存储与境内外传输。'},
-    {id:'zhipu', name:'Zhipu / GLM', tier:'care',
-     note:'需自备 Key；官方免费不确定，上线前复核 BigModel / 智谱隐私条款。'}
+  enabled_by_default:false,
+  role:'使用已填写的矩阵线索，生成一段受约束、可选的身体故事补充。',
+  redaction:'只发送去标识化的固定选项、节点级别和资料缺口；不发送姓名、电话、身份证、精确地址、机构、自由文本、原始数值、图片或 PDF。',
+  key_policy:'临时密钥仅保存在当前页面内存中，刷新即清空，不保存、不导出。',
+  default_base_url:'',
+  default_model:''
+};
+
+/* Guided ATM options: do not force users to invent antecedents/triggers/mediators from a blank box. */
+var ATM_OPTIONS={
+  ant:[
+    '家族慢病/代谢病史','早期喂养或成长经历','长期高糖/高油/外食饮食','长期压力或照护负担','长期睡眠作息不规律','既往疾病或手术史','长期用药/补剂史','体重长期变化','运动不足或久坐','环境/职业暴露'
+  ],
+  tri:[
+    '近期感染/发热','手术/创伤/住院','连续熬夜或过劳','明显情绪事件','饮食模式突然改变','饮酒或聚餐后不适','药物/补剂变化','近期体检异常','体重快速变化','旅行/搬家/环境变化'
+  ],
+  med:[
+    '睡眠不足或节律紊乱','压力持续偏高','饮食不规律或摄入失衡','运动不足或久坐','消化吸收不适','炎症/过敏线索','血糖/能量代谢压力','内分泌/激素节律线索','疼痛/肌骨结构问题','情绪/心理支持不足'
   ]
 };
 
@@ -1393,7 +1388,7 @@ var state = {
   records:[],           // 已保存档案数组
   submitted:false,
   lastReport:null,      // 最近一次生成的报告对象
-  ai:{ enabled:false, provider:'', acknowledged:false }
+  ai:{ enabled:false, baseUrl:AI_ENHANCEMENT.default_base_url, model:AI_ENHANCEMENT.default_model, acknowledged:false }
 };
 ALL_NODES.forEach(function(n){ state.nodeScores[n.id]={}; (n.items_zh||[]).forEach(function(_,i){ state.nodeScores[n.id][i]=0; }); });
 LIFESTYLE.forEach(function(l){ state.lifestyle[l.id]=-1; });
@@ -1686,7 +1681,7 @@ function buildSummary(){
 /* ════════════════════════════════════════════════════════════
    Functional medicine report generation.
    Runs locally: state -> configured mapping rules -> report object.
-   No external API call is made.
+   This local report construction makes no external API call.
    ════════════════════════════════════════════════════════════ */
 function runSkillEngine(){
   var SK=FUNCTIONAL_MEDICINE_SKILL, trace=[];
@@ -1789,7 +1784,7 @@ function renderReportView(){
   if(state.lastReport){ paintReport(state.lastReport); }
   else {
     document.getElementById('reportBody').innerHTML=
-      '<div class="report-stub">点击上方「<b>生成功能医学分析报告</b>」，报告会在你的浏览器本地完成整理。<br>不联网，不上传任何数据。<br><br>建议先完成「功能医学问卷」并在「健康数据记录」填入可用指标，报告会基于已填内容做映射。</div>';
+      '<div class="report-stub">点击上方「<b>生成功能医学分析报告</b>」，报告会在你的浏览器本地完成整理。<br>本地规则整理本身不联网；只有你在「AI 辅助观己报告」中主动开启并填写接入信息后，才会发送脱敏结构化摘要。<br><br>建议先完成「功能医学问卷」并在「健康数据记录」填入可用指标，报告会基于已填内容做映射。</div>';
     document.getElementById('reportActions').style.display='none';
   }
 }
@@ -1800,6 +1795,7 @@ function generateReport(){
     paintReport(rep);
     document.getElementById('reportActions').style.display='flex';
     flash('已生成离线报告');
+    requestAiSupplement(rep);
   });
 }
 function paintReport(rep){
@@ -2192,46 +2188,57 @@ function exportReport(){
   flash('已导出报告 JSON');
 }
 
-/* ════════ AI 增强设置（可选，默认关闭） ════════ */
+/* ════════ AI 辅助观己报告设置（可选，默认关闭） ════════ */
+function guidedAtmForAi(){
+  function selected(key){
+    var out=[];
+    (ATM_OPTIONS[key]||[]).forEach(function(value,i){ if(state.atmPick[key]&&state.atmPick[key][i]) out.push(value); });
+    return out;
+  }
+  return { antecedents:selected('ant'), triggers:selected('tri'), mediators:selected('med') };
+}
+function setAiSupplement(message,status){
+  var host=document.querySelector('#reportBody .rpt')||document.getElementById('reportBody');
+  if(!host) return;
+  var old=document.getElementById('aiSupplement'); if(old) old.remove();
+  var section=document.createElement('section'); section.id='aiSupplement'; section.className='rpt-section';
+  section.innerHTML='<div class="rpt-shead"><span class="rpt-snum">补</span><h3 class="rpt-stitle">可选身体故事补充</h3><span class="rpt-sen">OPTIONAL STORY</span></div><div class="rpt-rule"></div>';
+  var copy=document.createElement('p'); copy.className='rpt-lead ai-supplement-copy'; copy.textContent=message; section.appendChild(copy);
+  var note=document.createElement('p'); note.className='rpt-note';
+  note.textContent=status==='ok'?'此段仅作可选身体故事与沟通参考，不构成诊断、治疗或处方，请交由合格专业人员复核；本地报告内容未被更改。':(status==='loading'?'正在发送去标识化摘要；本地报告已先行完整生成。':(status==='rejected'?'未通过的返回内容不会显示，本地报告内容未被更改。':'可选补充暂不可用；本地报告已完整保留。'));
+  section.appendChild(note); host.appendChild(section);
+}
+function requestAiSupplement(rep){
+  if(!state.ai.enabled) return;
+  setAiSupplement('正在生成可选补充……','loading');
+  GuanjiAI.request(rep,{baseUrl:state.ai.baseUrl,model:state.ai.model},guidedAtmForAi()).then(function(content){
+    if(state.lastReport===rep) setAiSupplement(content,'ok');
+  }).catch(function(error){
+    if(state.lastReport!==rep) return;
+    if(error&&error.message==='AI_RESPONSE_INVALID') setAiSupplement('AI 内容未通过安全边界；本地报告仍可使用。','rejected');
+    else setAiSupplement('未能取得可选身体故事补充；本地报告仍可使用。','error');
+  });
+}
+function clearAiKey(){ GuanjiAI.clearKey(); renderAi(); flash('已清除当前页面内存中的临时密钥'); }
 function renderAi(){
   var A=AI_ENHANCEMENT, html='';
-  html+='<div class="card"><div class="row-between"><h3 style="margin:0">AI 增强开关 '+
-    '<span class="ai-status '+(state.ai.enabled?'on':'off')+'">'+(state.ai.enabled?'已开启':'默认关闭')+'</span></h3>'+
+  html+='<div class="card"><div class="row-between"><h3 style="margin:0">AI 辅助观己报告（可选） '+
+    '<span class="ai-status '+(state.ai.enabled?'on':'off')+'">'+(state.ai.enabled?'已开启':'已关闭')+'</span></h3>'+
     '<label class="switch"><input type="checkbox" id="aiToggle" '+(state.ai.enabled?'checked':'')+' onchange="toggleAi(this.checked)"><span class="sl-track"></span></label></div>'+
-    '<p class="grp-desc" style="margin-top:10px"><b style="color:var(--plum-deep)">默认离线规则引擎；AI 仅作可选润色 / 摘要 / 追问生成。</b>'+esc(A.role)+'</p>'+
-    '<div class="safety">⚕ 默认引擎：'+esc(A.default_engine)+'。开启 AI 不改变红线判定与实验室异常判断，这些始终由本地规则引擎决定。</div></div>';
+    '<p class="grp-desc" style="margin-top:10px">'+esc(A.role)+'</p>'+
+    '<div class="safety">⚕ 仅在你主动开启后，生成本地报告时才会发送去标识化摘要。内容不构成诊断、治疗或处方，请交由合格专业人员复核；请求失败或内容未通过安全边界时，本地报告仍可使用。</div></div>';
 
-  html+='<div class="card"><h3>隐私与脱敏</h3>'+
-    '<ul style="margin:4px 0 0;padding-left:18px;font-size:12.5px;color:var(--ink-mid);line-height:1.7">'+
-    '<li>'+esc(A.redaction)+'</li>'+
-    '<li>'+esc(A.key_policy)+'</li>'+
-    '<li>健康数据属敏感信息：任何免费额度都不稳定，上线前须复核各 provider 的隐私 / 计费 / 数据是否用于训练。</li>'+
-    '</ul></div>';
-
-  /* Key 输入：占位，无默认值，仅本地内存，不落仓库 */
-  html+='<div class="card"><h3>Provider 与 Key（本地，可选）</h3>'+
-    '<p class="grp-desc">仅当开启 AI 时使用。Key 只保存在当前页面内存，<b>不写入文件、不打印日志、无默认值</b>。本原型不实际发送请求。</p>'+
+  html+='<div class="card"><h3>接入方式</h3>'+
+    '<p class="grp-desc">浏览器将按 OpenAI-compatible 协议，以 Bearer 临时密钥向你填写的接入地址发送 <b>POST /chat/completions</b> 请求。仅支持这一兼容协议，不代表对任何服务或模型的推荐。</p>'+
+    '<ul style="margin:4px 0 12px;padding-left:18px;font-size:12.5px;color:var(--ink-mid);line-height:1.7">'+
+    '<li>'+esc(A.redaction)+'</li><li>'+esc(A.key_policy)+'</li></ul>'+
     '<div class="fields one">'+
-    '<div class="field"><label>选择 Provider</label><select id="aiProvider" onchange="state.ai.provider=this.value">'+
-    '<option value="">（未选择）</option>';
-  A.providers.forEach(function(p){ html+='<option value="'+p.id+'"'+(state.ai.provider===p.id?' selected':'')+'>'+esc(p.name)+'</option>'; });
-  html+='</select></div>'+
-    '<div class="field"><label>API Key（可选，仅本地内存）</label>'+
-    '<input type="password" autocomplete="off" placeholder="自备 Key 后粘贴；不会被保存到文件" oninput="/* 仅内存，不持久化 */"></div>'+
-    '</div></div>';
-
-  /* Provider 候选表（来源 em-5 §6） */
-  html+='<div class="card"><h3>Provider 候选（调研结论）</h3>'+
-    '<p class="grp-desc">来源：em-5 调研报告 §6。<span class="badge-rec">脱敏测试优先</span> Gemini / Groq；'+
-    '<span class="badge-dev">仅开发多模型</span> OpenRouter / Cloudflare / GitHub / HF；'+
-    '<span class="badge-care">需自备 Key·上线前复核</span> Kimi / DeepSeek / Zhipu。</p>'+
-    '<table class="provider-tbl"><thead><tr><th>Provider</th><th>定位</th><th>说明</th></tr></thead><tbody>';
-  A.providers.forEach(function(p){
-    var tier = p.tier==='rec'?'<span class="badge-rec">脱敏测试优先</span>':(p.tier==='dev'?'<span class="badge-dev">仅开发多模型</span>':'<span class="badge-care">需自备 Key</span>');
-    html+='<tr><td class="pri">'+esc(p.name)+'</td><td>'+tier+'</td><td>'+esc(p.note)+'</td></tr>';
-  });
-  html+='</tbody></table>'+
-    '<div class="safety" style="margin-top:12px">⚕ OpenRouter 仅用于开发期多模型测试，不默认发送健康数据；Cloudflare Workers AI 可作服务端低成本备选，隐私 / DPA 须上线前复核；Kimi / DeepSeek / Zhipu 需自备 Key 并在上线前复核隐私与计费。免费额度均不稳定。</div></div>';
+    '<div class="field"><label>接入地址</label><input id="aiBaseUrl" inputmode="url" value="'+esc(state.ai.baseUrl)+'" oninput="state.ai.baseUrl=this.value" placeholder="https://your-api.example/v1"></div>'+
+    '<div class="field"><label>模型名</label><input id="aiModel" value="'+esc(state.ai.model)+'" oninput="state.ai.model=this.value" placeholder="请填写模型名"></div>'+
+    '<div class="field"><label>临时密钥（仅当前页面内存） '+(GuanjiAI.hasKey()?'<span class="ai-status on">已配置</span>':'')+'</label>'+
+    '<input id="aiKey" type="password" autocomplete="new-password" value="" placeholder="'+(GuanjiAI.hasKey()?'已在内存中配置；输入可替换':'粘贴临时密钥；刷新即清空')+'" oninput="GuanjiAI.setKey(this.value)"></div></div>'+
+    (GuanjiAI.hasKey()?'<button class="btn btn-ghost" type="button" onclick="clearAiKey()">清除临时密钥</button>':'')+
+    '<div class="safety" style="margin-top:12px">⚕ 返回内容只以纯文本附加显示；若请求失败、超时、返回异常或未通过安全边界，本地报告与医疗红线仍完整保留。</div></div>';
 
   document.getElementById('aiBody').innerHTML=html;
 }
@@ -2239,7 +2246,7 @@ function toggleAi(on){
   state.ai.enabled=!!on;
   state.ai.acknowledged=!!on;
   renderAi();
-  flash(on?'AI 增强已开启（仅润色 / 摘要 / 追问）':'AI 增强已关闭（离线规则引擎）');
+  flash(on?'AI 辅助已开启；生成报告时将发送去标识化摘要':'AI 辅助已关闭；不会发起辅助请求');
 }
 
 /* ════════ 营养师查看 ════════ */
@@ -2272,8 +2279,7 @@ function exportAll(){
     ifm_scores:state.nodeScores, lifestyle:state.lifestyle, submitted:state.submitted,
     data_draft:state.data, records:state.records,
     engine_meta:FUNCTIONAL_MEDICINE_SKILL.meta,
-    last_report:state.lastReport,
-    ai_enhancement:{ enabled:state.ai.enabled, provider:state.ai.provider, note:AI_ENHANCEMENT.role }
+    last_report:state.lastReport
   };
   downloadJSON(payload, '灵台观己_健康档案_导出.json');
   flash('已导出 JSON 档案');
