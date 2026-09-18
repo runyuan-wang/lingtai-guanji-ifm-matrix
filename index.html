@@ -1,106 +1,56 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>灵台·观己｜功能医学观察报告</title>
-<meta name="description" content="功能医学时间轴 × 功能医学矩阵，温柔地看见自己的身体变化。仅作自我观察与资料整理，不作诊断。">
-<link rel="stylesheet" href="./css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>灵台 · 观己</title>
+  <meta name="description" content="花几分钟，整理一下最近的自己。灵台 · 观己只在当前浏览器中保存自我观察记录。">
+  <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
+  <main id="app" class="app-shell">
+    <section id="welcome-view" class="welcome-view" aria-labelledby="welcome-title">
+      <div class="welcome-mark" aria-hidden="true">观</div>
+      <p class="eyebrow">灵台 · 观己</p>
+      <h1 id="welcome-title">花几分钟，整理一下最近的自己。</h1>
+      <p class="welcome-lead">没有标准答案，只是把最近的身体与生活线索放在一起看看。</p>
+      <button id="start-button" class="button button-primary button-large" type="button">开始观己</button>
+      <p class="privacy-note">填写内容仅保存在当前浏览器中。<br>本工具用于自我观察与资料整理，不用于疾病诊断。</p>
+    </section>
 
-<header class="brand">
-  <div class="brand-zh">灵台 · 观己</div>
-  <div class="brand-sub">功能医学观察报告 · Functional Medicine Observation</div>
-  <div class="brand-line"></div>
-</header>
+    <section id="question-view" class="question-view" hidden aria-live="polite">
+      <div class="question-topbar">
+        <button id="question-home" class="icon-button" type="button" aria-label="返回欢迎页">灵台 · 观己</button>
+        <span id="progress-label" class="progress-label">1 / 12</span>
+      </div>
+      <div class="progress-track" aria-hidden="true"><div id="progress-bar" class="progress-bar"></div></div>
+      <div id="question-stage" class="question-stage"></div>
+      <div class="question-actions">
+        <button id="previous-button" class="button button-secondary" type="button">← 上一题</button>
+        <button id="next-button" class="button button-primary" type="button">下一题 →</button>
+      </div>
+      <p class="flow-note">可以随时返回修改。所有问题都可以留空。</p>
+    </section>
 
-<main id="edit-view" class="wrap">
+    <section id="report-view" class="report-view" hidden aria-live="polite">
+      <div class="report-actions">
+        <button id="report-edit" class="button button-secondary" type="button">← 返回修改</button>
+        <button id="save-png" class="button button-primary" type="button">保存观己报告 PNG</button>
+      </div>
+      <div id="report-status" class="report-status" role="status"></div>
+      <div id="report-box" class="report-box"></div>
+    </section>
+  </main>
 
-  <!-- 一 · 基础资料 -->
-  <section class="card">
-    <div class="sec-title"><span class="sec-zh">一 · 基础资料</span><span class="sec-en">Profile</span></div>
-    <div class="form-grid">
-      <label class="field"><span>昵称 / 姓名</span><input id="pf-name" type="text" placeholder="怎么称呼你"></label>
-      <label class="field"><span>年龄</span><input id="pf-age" type="number" min="0" max="120" placeholder="选填"></label>
-      <label class="field"><span>性别</span>
-        <select id="pf-sex">
-          <option value="">选填</option>
-          <option>女</option><option>男</option><option>其他</option>
-        </select>
-      </label>
-      <label class="field"><span>日期</span><input id="pf-date" type="date"></label>
-      <label class="field"><span>身高 (cm)</span><input id="pf-height" type="number" min="0" placeholder="选填"></label>
-      <label class="field"><span>体重 (kg)</span><input id="pf-weight" type="number" min="0" placeholder="选填"></label>
-    </div>
-  </section>
+  <footer class="site-footer">灵台 · 观己　|　只在此浏览器中保存</footer>
 
-  <!-- 二 · 生活方式 -->
-  <section class="card">
-    <div class="sec-title"><span class="sec-zh">二 · 生活方式</span><span class="sec-en">Lifestyle</span></div>
-    <p class="sec-hint">简单写一句近况即可，这些内容会进入报告，也可以和时间轴事件、矩阵节点互相关联。</p>
-    <div id="lifestyle-box" class="life-grid"></div>
-  </section>
-
-  <!-- 三 · 功能医学时间轴 -->
-  <section class="card">
-    <div class="sec-title"><span class="sec-zh">三 · 功能医学时间轴</span><span class="sec-en">Functional Medicine Timeline</span></div>
-    <p class="sec-hint">把重要的健康与生活变化按时间放进来，并标记它是前因、诱因、介质，还是当前表现。时间轴帮助看见身体演变的可能脉络，不作因果定论。</p>
-    <div id="timeline-form-box"></div>
-    <div id="timeline-list"></div>
-    <button type="button" class="btn btn-soft" id="btn-add-event">＋ 添加事件</button>
-  </section>
-
-  <!-- 四 · 功能医学矩阵 -->
-  <section class="card">
-    <div class="sec-title"><span class="sec-zh">四 · 功能医学矩阵</span><span class="sec-en">IFM Matrix</span></div>
-    <p class="sec-hint">在七大 IFM 功能节点与中心核里写下相关线索；与时间轴事件关联的节点会自动累计记录。</p>
-    <div id="matrix-input-box" class="mx-input"></div>
-  </section>
-
-  <!-- 生成报告 -->
-  <div class="generate-bar">
-    <button type="button" class="btn btn-primary btn-lg" id="btn-generate">生成观己报告</button>
-    <button type="button" class="btn btn-ghost btn-lg" id="btn-clear">清空本地记录</button>
-  </div>
-
-  <p class="foot-note">本工具用于健康资料整理、自我观察与专业沟通辅助，不构成诊断、治疗、用药、营养治疗处方或临床决策依据。所有填写内容只保存在你的浏览器本地。</p>
-</main>
-
-<!-- 报告视图 -->
-<main id="report-view" class="wrap" style="display:none">
-  <div class="report-actions no-export">
-    <button type="button" class="btn btn-soft" id="btn-back-edit">← 返回修改</button>
-    <button type="button" class="btn btn-primary" id="btn-save-png">保存观己报告（PNG 长图）</button>
-  </div>
-  <div id="story-meta" class="story-meta no-export"></div>
-  <div id="report-box"></div>
-  <div class="report-actions no-export">
-    <button type="button" class="btn btn-soft" id="btn-back-edit-2">← 返回修改</button>
-  </div>
-  <div id="png-status" class="png-status no-export"></div>
-</main>
-
-<footer class="foot">
-  <span>灵台 · 观己 —— 时间轴是经，功能医学矩阵是纬，观己故事把经纬织在一起。</span>
-</footer>
-
-<script src="./vendor/qrcode.js"></script>
-<script src="./vendor/html2canvas.min.js"></script>
-<script src="./js/config.js"></script>
-<script src="./js/matrix.js"></script>
-<script src="./js/timeline.js"></script>
-<script src="./js/story.js"></script>
-<script src="./js/report.js"></script>
-<script src="./js/app.js"></script>
-<script>
-/* 第二个「返回修改」按钮与第一个等价 */
-document.addEventListener('DOMContentLoaded', function () {
-  var b = document.getElementById('btn-back-edit-2');
-  if (b) b.addEventListener('click', function () {
-    document.getElementById('btn-back-edit').click();
-  });
-});
-</script>
+  <script src="./vendor/qrcode.js"></script>
+  <script src="./vendor/html2canvas.min.js"></script>
+  <script src="./js/config.js"></script>
+  <script src="./js/matrix.js"></script>
+  <script src="./js/timeline.js"></script>
+  <script src="./js/story.js"></script>
+  <script src="./js/report.js"></script>
+  <script src="./js/app.js"></script>
 </body>
 </html>

@@ -1,143 +1,85 @@
-/* ============================================================
- * report.js — 报告渲染、二维码、高清 PNG 长图导出
- * 报告结构（与人类规格一致）：
- *   顶部 → 本次所见 → 功能医学时间轴 → 功能医学矩阵 →
- *   观己故事 → 生活脉络 → 二维码 → 专业边界说明
- * 二维码只编码 config.js 中的项目首页 URL，不编码任何健康数据。
- * PNG 导出：HTML 报告预览 + html2canvas（≥2×，高度随内容自动变化）。
- * ============================================================ */
+/* 报告、二维码与真实 PNG 导出。所有用户文字均通过 textContent/转义进入 DOM。 */
 window.GJ = window.GJ || {};
-
-/* ---------- 用 vendored qrcode.js（Kazuhiko Arase, MIT）绘制二维码 ---------- */
+GJ.escape = function (value) {
+  return String(value == null ? '' : value).replace(/[&<>"']/g, function (ch) {
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];
+  });
+};
 GJ.drawQR = function (canvas, url, size) {
-  size = size || 220;
-  const qr = qrcode(0, 'M'); /* 自动选版本，M 级纠错 */
+  var qr = qrcode(0, 'M');
   qr.addData(url);
   qr.make();
-  const n = qr.getModuleCount();
-  const cell = Math.floor(size / (n + 8)); /* 4 格静默区 */
-  const real = cell * (n + 8);
+  var count = qr.getModuleCount();
+  var cell = Math.max(3, Math.floor((size || 220) / (count + 8)));
+  var real = cell * (count + 8);
   canvas.width = real;
   canvas.height = real;
-  const ctx = canvas.getContext('2d');
+  var ctx = canvas.getContext('2d');
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(0, 0, real, real);
-  ctx.fillStyle = '#253047';
-  for (let r = 0; r < n; r++) {
-    for (let c = 0; c < n; c++) {
-      if (qr.isDark(r, c)) {
-        ctx.fillRect((c + 4) * cell, (r + 4) * cell, cell, cell);
-      }
+  ctx.fillStyle = '#273744';
+  for (var r = 0; r < count; r += 1) {
+    for (var c = 0; c < count; c += 1) {
+      if (qr.isDark(r, c)) ctx.fillRect((c + 4) * cell, (r + 4) * cell, cell, cell);
     }
   }
   return canvas;
 };
-
-/* ---------- 报告构建 ---------- */
+function reportSection(number, title, body) {
+  return '<section class="report-section"><div class="report-section-heading"><span class="report-number">' + number + '</span><h2>' + title + '</h2></div>' + body + '</section>';
+}
+function reportList(items, emptyText) {
+  var usable = (items || []).filter(function (item) { return String(item || '').trim(); });
+  if (!usable.length) return '<p class="report-muted">' + GJ.escape(emptyText) + '</p>';
+  return '<ul class="report-list">' + usable.map(function (item) { return '<li>' + GJ.escape(item) + '</li>'; }).join('') + '</ul>';
+}
 GJ.reportBuild = function (container, state) {
-  const st = GJ.storyGenerate(state);
-  const profile = state.profile || {};
-  const dateStr = profile.date || '';
-  const nameStr = profile.name || '未署名';
-  const sexStr = profile.sex ? ' · ' + profile.sex : '';
-  const ageStr = profile.age ? ' · ' + profile.age + ' 岁' : '';
-  const hw = [profile.height && '身高 ' + profile.height, profile.weight && '体重 ' + profile.weight]
-    .filter(Boolean).join('，');
-
-  container.innerHTML =
-    '<div class="rp-paper" id="rp-paper">' +
-
-    /* 1 · 报告顶部 */
-    '  <div class="rp-head">' +
-    '    <div class="rp-brand">灵台 · 观己</div>' +
-    '    <div class="rp-kind">功能医学观察报告</div>' +
-    '    <div class="rp-meta">' + GJ.escHtml(nameStr) + GJ.escHtml(ageStr) + GJ.escHtml(sexStr) +
-         (dateStr ? ' · ' + GJ.escHtml(dateStr) : '') + '</div>' +
-    (hw ? '    <div class="rp-meta rp-meta-sub">' + GJ.escHtml(hw) + '</div>' : '') +
-    '    <div class="rp-summary-line">' + GJ.escHtml(st.summary) + '</div>' +
-    '  </div>' +
-
-    /* 2 · 本次所见 */
-    '  <div class="rp-section">' +
-    '    <div class="rp-sec-title"><span class="rp-sec-zh">本次所见</span><span class="rp-sec-en">What This Record Shows</span></div>' +
-    '    <div class="rp-kws">' +
-         st.keywords.map(function (k) { return '<span class="rp-kw">' + GJ.escHtml(k) + '</span>'; }).join('') +
-    '    </div>' +
-    '  </div>' +
-
-    /* 3 · 功能医学时间轴（主区域） */
-    '  <div class="rp-section">' +
-    '    <div class="rp-sec-title"><span class="rp-sec-zh">功能医学时间轴</span><span class="rp-sec-en">Functional Medicine Timeline</span></div>' +
-    '    <div class="rp-timeline" id="rp-timeline"></div>' +
-    '  </div>' +
-
-    /* 4 · 功能医学矩阵（主区域） */
-    '  <div class="rp-section">' +
-    '    <div class="rp-sec-title"><span class="rp-sec-zh">功能医学矩阵</span><span class="rp-sec-en">IFM Functional Medicine Matrix</span></div>' +
-    '    <div class="rp-matrix" id="rp-matrix"></div>' +
-    '  </div>' +
-
-    /* 5 · 观己故事 */
-    '  <div class="rp-section rp-story-sec">' +
-    '    <div class="rp-sec-title"><span class="rp-sec-zh">观己故事</span><span class="rp-sec-en">Your Story of Self-Observation</span></div>' +
-    '    <div class="rp-story-sub">把零散的身体信号，慢慢连成自己的时间线。</div>' +
-    '    <div class="rp-story">' + GJ.escHtml(st.story) + '</div>' +
-    '  </div>' +
-
-    /* 6 · 生活脉络 */
-    '  <div class="rp-section">' +
-    '    <div class="rp-sec-title"><span class="rp-sec-zh">生活脉络</span><span class="rp-sec-en">Lifestyle Context</span></div>' +
-    '    <div class="rp-life" id="rp-life"></div>' +
-    '  </div>' +
-
-    /* 7 · 二维码 */
-    '  <div class="rp-section rp-qr-sec">' +
-    '    <div class="rp-qr-box"><canvas id="rp-qrcode"></canvas></div>' +
-    '    <div class="rp-qr-text">扫码再次记录 · 回到灵台 · 观己</div>' +
-    '    <div class="rp-qr-url">' + GJ.escHtml(GJ.CONFIG.PROJECT_HOME_URL) + '</div>' +
-    '  </div>' +
-
-    /* 8 · 专业边界 */
-    '  <div class="rp-disclaimer">本工具用于健康资料整理、自我观察与专业沟通辅助，不构成诊断、治疗、用药、营养治疗处方或临床决策依据。</div>' +
-    '</div>';
-
-  /* 填充时间轴与矩阵 */
-  GJ.timelineRenderReport(container.querySelector('#rp-timeline'), state);
-  GJ.matrixRenderReport(container.querySelector('#rp-matrix'), state);
-
-  /* 生活脉络小卡片 */
-  const lifeBox = container.querySelector('#rp-life');
-  const anyLife = GJ.LIFESTYLE_FIELDS.some(function (f) { return (state.lifestyle[f.key] || '').trim(); });
-  if (anyLife) {
-    lifeBox.innerHTML = GJ.LIFESTYLE_FIELDS
-      .filter(function (f) { return (state.lifestyle[f.key] || '').trim(); })
-      .map(function (f) {
-        return '<div class="rp-life-card"><div class="rp-life-zh">' + f.zh + '</div>' +
-               '<div class="rp-life-txt">' + GJ.escHtml(state.lifestyle[f.key].trim()) + '</div></div>';
-      }).join('');
-  } else {
-    lifeBox.innerHTML = '<div class="tl-empty">本次未填写生活方式记录。</div>';
+  var a = GJ.normalizeAnswers ? GJ.normalizeAnswers(state && state.answers) : (state && state.answers) || {};
+  if (state && state.answers) state.answers = a;
+  var nickname = (a.nickname || '').trim();
+  var title = nickname ? GJ.escape(nickname) + '的观己小记' : '这一份观己小记';
+  var now = new Date();
+  var date = now.getFullYear() + '.' + String(now.getMonth() + 1).padStart(2, '0') + '.' + String(now.getDate()).padStart(2, '0');
+  var story = GJ.storyGenerate(a);
+  var focusLabels = (a.focus || []).map(function (key) { return GJ.QUESTION_LABELS.focus[key]; }).filter(Boolean);
+  var changeLabels = (a.changes || []).map(function (key) { return GJ.QUESTION_LABELS.changes[key]; }).filter(Boolean);
+  var cards = [];
+  function addCard(label, value) {
+    if (value) cards.push('<div class="status-card"><span class="status-label">' + GJ.escape(label) + '</span><strong>' + GJ.escape(value) + '</strong></div>');
   }
-
-  /* 绘制二维码：只编码项目首页 URL */
-  GJ.drawQR(container.querySelector('#rp-qrcode'), GJ.CONFIG.PROJECT_HOME_URL, 220);
-
-  return st; /* 返回故事结果，便于 app.js 显示字数等 */
+  addCard('睡眠', GJ.selectedText(a.sleep, GJ.QUESTION_LABELS.sleep));
+  addCard('精力', GJ.selectedText(a.energy, GJ.QUESTION_LABELS.energy));
+  addCard('胃肠', GJ.selectedText(a.digestion, GJ.QUESTION_LABELS.digestion));
+  addCard('饮食', GJ.selectedText(a.food, GJ.QUESTION_LABELS.food));
+  addCard('压力', GJ.selectedText(a.stress, GJ.QUESTION_LABELS.stress));
+  addCard('活动', GJ.selectedText(a.activity, GJ.QUESTION_LABELS.activity));
+  addCard('记录', GJ.selectedText(a.medication, GJ.QUESTION_LABELS.medication));
+  var observe = [];
+  if (a.sleep && a.sleep.length) observe.push('可以继续记录睡眠变化时，白天精力有没有一起变化。');
+  if (a.digestion && a.digestion.length) observe.push('可以继续留意胃肠感受出现时，饮食、压力或作息是否也被记录下来。');
+  if (a.stress && a.stress.length) observe.push('可以继续记下压力和情绪变化，以及哪些日子相对舒服。');
+  if (!observe.length) observe.push('可以继续记录接下来几天的身体感受、生活节奏，以及让你觉得舒服的时刻。');
+  var freeText = (a.note || '').trim();
+  var q10 = GJ.isAffirmativeMedication(a.medication) && a.medNotes && a.medNotes.trim() ? a.medNotes.trim() : '';
+  var html = '<article id="report-paper" class="report-paper">' +
+    '<header class="report-header"><div class="report-brand">灵台 · 观己</div><div class="report-kicker">个人观己报告</div><h1>' + title + '</h1><p class="report-date">' + date + '</p><p class="report-intro">' + GJ.escape(story.summary) + '</p></header>';
+  html += reportSection('01', '你最近最在意的', '<p>' + (focusLabels.length ? '最近，你主要记录了' + GJ.escape(GJ.joinNatural(focusLabels)) + '方面的变化。' : '这次暂时没有选择具体的主题，之后也可以从任何一个感受开始记录。') + '</p>');
+  html += reportSection('02', '这些变化大概在什么时候', '<p>' + (story.context ? GJ.escape(story.context) + '。' : '这次还没有填写持续时间或之前的生活变化。') + '</p>' + (changeLabels.length ? '<p class="report-secondary">之前或同时，你选择了：' + GJ.escape(GJ.joinNatural(changeLabels)) + '。</p>' : ''));
+  html += reportSection('03', '最近的生活状态', '<div class="status-grid">' + (cards.length ? cards.join('') : '<p class="report-muted">这次还没有填写生活状态。</p>') + '</div>' + (q10 ? '<p class="report-secondary">药物或补充剂记录：' + GJ.escape(q10) + '</p>' : ''));
+  html += reportSection('04', '可以继续观察什么', reportList(observe, '之后可以继续记录让你在意的变化。'));
+  if (freeText) html += reportSection('05', '我还记录了', '<div class="free-note">' + GJ.escape(freeText).replace(/\n/g, '<br>') + '</div>');
+  html += '<section class="report-share"><canvas id="report-qr" aria-label="项目首页二维码"></canvas><p>回到灵台 · 观己</p><small>' + GJ.escape(GJ.CONFIG.PROJECT_HOME_URL) + '</small></section>';
+  html += '<p class="report-disclaimer">本工具用于自我观察与资料整理，不用于疾病诊断，也不提供治疗或用药建议。所有填写内容仅保存在当前浏览器中。</p></article>';
+  container.innerHTML = html;
+  GJ.drawQR(container.querySelector('#report-qr'), GJ.CONFIG.PROJECT_HOME_URL, 224);
+  return { title: title, date: date, focus: focusLabels, context: story.context };
 };
-
-/* ---------- PNG 长图导出（html2canvas，≥2×） ---------- */
-GJ.reportExportPNG = function (reportContainer) {
-  const el = reportContainer.querySelector('#rp-paper') || reportContainer;
-  if (typeof html2canvas !== 'function') {
-    return Promise.reject(new Error('html2canvas 未加载'));
-  }
-  return html2canvas(el, {
-    scale: GJ.CONFIG.PNG_SCALE,
-    backgroundColor: '#FAF7F1',
-    useCORS: true,
-    logging: false,
-    windowWidth: el.scrollWidth + 40,
-  }).then(function (canvas) {
-    return canvas.toDataURL('image/png');
+GJ.reportExportPNG = function (container) {
+  var paper = container.querySelector('#report-paper');
+  if (!paper || typeof html2canvas !== 'function') return Promise.reject(new Error('报告图片工具未加载'));
+  return html2canvas(paper, {scale: GJ.CONFIG.PNG_SCALE, backgroundColor: '#f7f3ed', useCORS: true, logging: false, width: paper.scrollWidth, windowWidth: paper.scrollWidth}).then(function (canvas) {
+    var dataUrl = canvas.toDataURL('image/png');
+    window.__lastPngDataUrl = dataUrl;
+    return dataUrl;
   });
 };
