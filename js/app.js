@@ -27,6 +27,20 @@ GJ.QUESTIONS = [
   { key: 'note', title: '还有什么是你觉得可能有关，想一起记下来的吗？', hint: '完全选填。可以写生活变化、身体感受，或最近特别在意的事情。', input: 'textarea', multiple: false, auto: false },
   { key: 'nickname', title: '这份观己报告怎么称呼你？', hint: '选填；不填写也可以直接生成报告。', input: 'nickname', multiple: false, auto: false }
 ];
+GJ.QUESTION_ILLUSTRATIONS = {
+  focus: '01_welcome_notebook.png',
+  duration: '02_duration_calendar.png',
+  changes: '03_changes_reflect.png',
+  sleep: '04_sleep_pillow.png',
+  energy: '05_energy_desk.png',
+  digestion: '06_digestion_abdomen.png',
+  food: '07_food_meal.png',
+  stress: '08_stress_reflect.png',
+  activity: '09_activity_stretch.png',
+  medication: '10_medication_bottle.png',
+  note: '05_energy_desk.png',
+  nickname: '01_welcome_notebook.png'
+};
 GJ.defaultAnswers = function () {
   return { focus: [], duration: '', changes: [], sleep: [], energy: '', digestion: [], food: '', stress: [], activity: '', medication: '', medNotes: '', note: '', nickname: '' };
 };
@@ -162,7 +176,10 @@ function renderQuestion() {
   byId('progress-label').textContent = (index + 1) + ' / ' + GJ.QUESTIONS.length;
   byId('progress-bar').style.width = (((index + 1) / GJ.QUESTIONS.length) * 100) + '%';
   var stage = byId('question-stage');
-  var html = '<p class="question-count">第 ' + (index + 1) + ' 题</p><h1 class="question-title">' + GJ.escape(question.title) + '</h1><p class="question-hint">' + GJ.escape(question.hint || '') + '</p>';
+  var html = '<p class="question-count">第 ' + (index + 1) + ' 题</p>';
+  var illustration = GJ.QUESTION_ILLUSTRATIONS[question.key];
+  if (illustration) html += '<div class="question-illustration" aria-hidden="true"><img src="./assets/illustrations/' + GJ.escape(illustration) + '" alt="" draggable="false" onerror="this.parentNode.hidden=true"></div>';
+  html += '<h1 class="question-title">' + GJ.escape(question.title) + '</h1><p class="question-hint">' + GJ.escape(question.hint || '') + '</p>';
   if (question.options) {
     html += '<div class="option-list" role="group" aria-label="' + GJ.escape(question.title) + '">';
     question.options.forEach(function (option) {

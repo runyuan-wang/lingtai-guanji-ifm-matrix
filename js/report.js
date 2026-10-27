@@ -33,6 +33,26 @@ function reportList(items, emptyText) {
   if (!usable.length) return '<p class="report-muted">' + GJ.escape(emptyText) + '</p>';
   return '<ul class="report-list">' + usable.map(function (item) { return '<li>' + GJ.escape(item) + '</li>'; }).join('') + '</ul>';
 }
+function reportMatrixNode(node, extraClass) {
+  var clues = node.clues.slice(0, 3).map(function (clue) {
+    return '<li>' + GJ.escape(clue.label) + '</li>';
+  }).join('');
+  return '<section class="ifm-node ifm-level-' + node.level + (extraClass ? ' ' + extraClass : '') + '" data-node="' + GJ.escape(node.id) + '" data-level="' + node.level + '">' +
+    '<div class="ifm-node-heading"><div><h3>' + GJ.escape(node.name) + '</h3><p class="ifm-node-subtitle">' + GJ.escape(node.subtitle) + '</p></div><span class="ifm-node-status">' + GJ.escape(node.levelLabel) + '</span></div>' +
+    '<p class="ifm-node-english">' + GJ.escape(node.english) + '</p>' +
+    '<p class="ifm-node-count">' + node.count + ' 条记录线索</p>' +
+    (clues ? '<ul class="ifm-clues" aria-label="来源线索">' + clues + '</ul>' : '') +
+    '</section>';
+}
+function reportMatrix(matrix) {
+  var mes = matrix.nodes.filter(function (node) { return node.id === 'mes'; })[0];
+  var surrounding = matrix.nodes.filter(function (node) { return node.id !== 'mes'; });
+  return '<p class="ifm-intro">基于你这次填写的内容，将记录整理到几个观察主题中。</p>' +
+    '<div class="ifm-legend" aria-label="记录数量等级"><span><i class="ifm-swatch ifm-level-0" aria-hidden="true"></i>0 条 · 未记录</span><span><i class="ifm-swatch ifm-level-1" aria-hidden="true"></i>1–2 条 · 有记录</span><span><i class="ifm-swatch ifm-level-2" aria-hidden="true"></i>≥3 条 · 记录较多</span></div>' +
+    '<div class="ifm-map">' + reportMatrixNode(mes, 'ifm-node-mes') + '<div class="ifm-node-grid">' + surrounding.map(function (node) { return reportMatrixNode(node, ''); }).join('') + '</div></div>' +
+    '<p class="ifm-context-note">正常 / 无明显问题、跳过项和药物 / 补充剂记录只作背景，不计入线索数。</p>' +
+    '<p class="ifm-disclaimer">这里的颜色深浅只表示本次填写中相关线索的多少，不代表疾病风险、严重程度或诊断结果。</p>';
+}
 GJ.reportBuild = function (container, state) {
   var a = GJ.normalizeAnswers ? GJ.normalizeAnswers(state && state.answers) : (state && state.answers) || {};
   if (state && state.answers) state.answers = a;
@@ -41,6 +61,7 @@ GJ.reportBuild = function (container, state) {
   var now = new Date();
   var date = now.getFullYear() + '.' + String(now.getMonth() + 1).padStart(2, '0') + '.' + String(now.getDate()).padStart(2, '0');
   var story = GJ.storyGenerate(a);
+  var matrix = GJ.matrixBuildFromAnswers(a);
   var focusLabels = (a.focus || []).map(function (key) { return GJ.QUESTION_LABELS.focus[key]; }).filter(Boolean);
   var changeLabels = (a.changes || []).map(function (key) { return GJ.QUESTION_LABELS.changes[key]; }).filter(Boolean);
   var cards = [];
@@ -66,18 +87,19 @@ GJ.reportBuild = function (container, state) {
   html += reportSection('01', '你最近最在意的', '<p>' + (focusLabels.length ? '最近，你主要记录了' + GJ.escape(GJ.joinNatural(focusLabels)) + '方面的变化。' : '这次暂时没有选择具体的主题，之后也可以从任何一个感受开始记录。') + '</p>');
   html += reportSection('02', '这些变化大概在什么时候', '<p>' + (story.context ? GJ.escape(story.context) + '。' : '这次还没有填写持续时间或之前的生活变化。') + '</p>' + (changeLabels.length ? '<p class="report-secondary">之前或同时，你选择了：' + GJ.escape(GJ.joinNatural(changeLabels)) + '。</p>' : ''));
   html += reportSection('03', '最近的生活状态', '<div class="status-grid">' + (cards.length ? cards.join('') : '<p class="report-muted">这次还没有填写生活状态。</p>') + '</div>' + (q10 ? '<p class="report-secondary">药物或补充剂记录：' + GJ.escape(q10) + '</p>' : ''));
-  html += reportSection('04', '可以继续观察什么', reportList(observe, '之后可以继续记录让你在意的变化。'));
-  if (freeText) html += reportSection('05', '我还记录了', '<div class="free-note">' + GJ.escape(freeText).replace(/\n/g, '<br>') + '</div>');
+  html += reportSection('04', '身体观察地图', reportMatrix(matrix));
+  html += reportSection('05', '可以继续观察什么', reportList(observe, '之后可以继续记录让你在意的变化。'));
+  if (freeText) html += reportSection('06', '我还记录了', '<div class="free-note">' + GJ.escape(freeText).replace(/\n/g, '<br>') + '</div>');
   html += '<section class="report-share"><canvas id="report-qr" aria-label="项目首页二维码"></canvas><p>回到灵台 · 观己</p><small>' + GJ.escape(GJ.CONFIG.PROJECT_HOME_URL) + '</small></section>';
   html += '<p class="report-disclaimer">本工具用于自我观察与资料整理，不用于疾病诊断，也不提供治疗或用药建议。所有填写内容仅保存在当前浏览器中。</p></article>';
   container.innerHTML = html;
   GJ.drawQR(container.querySelector('#report-qr'), GJ.CONFIG.PROJECT_HOME_URL, 224);
-  return { title: title, date: date, focus: focusLabels, context: story.context };
+  return { title: title, date: date, focus: focusLabels, context: story.context, matrix: matrix };
 };
 GJ.reportExportPNG = function (container) {
   var paper = container.querySelector('#report-paper');
   if (!paper || typeof html2canvas !== 'function') return Promise.reject(new Error('报告图片工具未加载'));
-  return html2canvas(paper, {scale: GJ.CONFIG.PNG_SCALE, backgroundColor: '#f7f3ed', useCORS: true, logging: false, width: paper.scrollWidth, windowWidth: paper.scrollWidth}).then(function (canvas) {
+  return html2canvas(paper, {scale: GJ.CONFIG.PNG_SCALE, backgroundColor: '#f7f3ed', useCORS: true, logging: false, width: paper.scrollWidth, windowWidth: window.innerWidth}).then(function (canvas) {
     var dataUrl = canvas.toDataURL('image/png');
     window.__lastPngDataUrl = dataUrl;
     return dataUrl;
