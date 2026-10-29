@@ -52,7 +52,7 @@ GJ.selectedText = function (value, labels) {
 };
 GJ.MUTUALLY_EXCLUSIVE = {
   changes: { none: ['pressure', 'routine', 'diet', 'sick', 'medicine', 'move', 'event', 'exercise', 'other'] },
-  sleep: { good: ['sometimes', 'often', 'fall', 'wake', 'tired'] },
+  sleep: { good: ['sometimes', 'often', 'fall', 'wake', 'tired'], sometimes: ['often'] },
   digestion: { normal: ['bloating', 'reflux', 'diarrhea', 'constipation', 'irregular', 'food', 'other'] },
   stress: { relaxed: ['little', 'clear', 'anxious', 'low'], skip: ['relaxed', 'little', 'clear', 'anxious', 'low', 'event'] }
 };
@@ -107,6 +107,11 @@ GJ.save = function () {
     localStorage.setItem(GJ.CONFIG.STORAGE_KEY, JSON.stringify(GJ.state));
   } catch (error) { /* 本地存储不可用时仍可继续使用 */ }
 };
+GJ.resetStoredState = function (storage) {
+  (storage || localStorage).removeItem(GJ.CONFIG.STORAGE_KEY);
+  GJ.state = GJ.defaultState();
+  return GJ.state;
+};
 GJ.load = function () {
   var fresh = GJ.defaultState();
   try {
@@ -136,6 +141,7 @@ function showWelcome() {
   setVisible('welcome-view', true); setVisible('question-view', false); setVisible('report-view', false);
   var start = byId('start-button');
   start.textContent = GJ.state.completed ? '查看我的报告' : (GJ.state.started ? '继续观己' : '开始观己');
+  byId('restart-button').hidden = !GJ.state.started && !GJ.state.completed;
 }
 function showQuestion() {
   setVisible('welcome-view', false); setVisible('question-view', true); setVisible('report-view', false);
@@ -229,6 +235,10 @@ document.addEventListener('DOMContentLoaded', function () {
   byId('start-button').addEventListener('click', function () {
     if (GJ.state.completed) { showReport(); return; }
     GJ.state.started = true; saveAndKeep(); showQuestion();
+  });
+  byId('restart-button').addEventListener('click', function () {
+    GJ.resetStoredState(localStorage);
+    showWelcome();
   });
   byId('next-button').addEventListener('click', advance);
   byId('previous-button').addEventListener('click', goPrevious);
